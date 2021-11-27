@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+
+{#    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">#}
+{#    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap5.css">#}
+ 	<meta charset="utf-8">
+	<title>dispatch load</title>
+	<link rel="stylesheet" href="../static/style.css">
+		<!--<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css"> -->
+        <!--<link rel="stylesheet" href="../static/all.css"> -->
+  </head>
+  <style type="text/css">
+    #order_form input{
+        {#background-color: red;#}
+        {#margin-bottom: 100px;#}
+        margin-right: 7px;
+        margin: 7px;
+    }
+    #order_form{
+        width: 70%;
+        background-color: lightslategray;
+        {#padding: 20px;#}
+        margin: auto;
+        border: 1px solid #73AD21;
+        padding: 10px;
+    }
+</style>
+
+  <body class="loggedin">
+		<nav class="navtop">
+			<div>
+				<h1>MULAN LOGISTIC MTS</h1>
+                <a href="{{ url_for('home') }}"><i class="fas fa-home"></i>All Loads</a>
+				<a href="{{ url_for('dispatch') }}"><i class="fas fa-user-circle"></i>dispatching</a>
+				<a href="{{ url_for('dispatch') }}"><i class="fas fa-user-circle"></i>Assets</a>
+				<a href="{{ url_for('dispatch') }}"><i class="fas fa-user-circle"></i>HR</a>
+                <a href="{{ url_for('dispatch') }}"><i class="fas fa-user-circle"></i>Accounting</a>
+				<a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i>Logout</a>
+
+			</div>
+		</nav>
+    <div class="container">
+      <h1>Dispatch</h1>
+      <hr>
+    </div>
+
+    <form  method="post" id="order_form" name="order_form">
+    <label>Load#</label><input id="load_num" name="load_num" style="width:100px"/>
+    <label>PO#</label><input id="po_num" name="po_num" style="width:100px"/>
+    <label>Load Status </label>
+    <select name="load_status">
+    {% for ld_status in load_status %}
+        <option>{{ ld_status['load_status'] }}</option>
+    {% endfor %}
+    </select>
+    <label>Driver </label>
+    <select name="driver_name">
+    {% for dri in dir_names %}
+        <option>{{ dri['name'] }}</option>
+    {% endfor %}
+    </select>
+    <label>Truck </label>
+    <select name="truck_name">
+    {% for truck in truck_names %}
+        <option>{{ truck['assets_name'] }}</option>
+    {% endfor %}
+    </select><br>
+    <label>Pickup </label><input type="datetime-local" name="pickup" style="width:250px"/>
+    <label>Delivery </label><input type="datetime-local" name="delivery"style="width:250px" />
+    <label>ArrivedDate</label><input type="datetime-local" name="avail" style="width:250px"/>
+    <br>
+    <label>  Origin</label><input id="origin_address" name="origin_address" style="width:100ch" maxlength="100"/>
+    <select name="origin_state" style="width:100px">
+    {% for state in us_states %}
+        <option value={{ state['Alpha_code'] }}>{{ state['Alpha_code'] + ' '+ state['State']}}</option>
+    {% endfor %}
+    </select><br>
+    <label>Destination</label><input name="destination_address" style="width:100ch" maxlength="100"/>
+    <select name="destination_state" style="width:100px">
+    {% for state in us_states %}
+        <option value={{ state['Alpha_code'] }}>{{ state['Alpha_code'] + ' '+ state['State']}}</option>
+    {% endfor %}
+    </select>
+    <br>
+    <label>Customer</label><input name="customer"/>
+    <label>Trip</label><input type="number" style="width:60px" maxlength="4" name="trip"/><label>Miles  </label>
+    <label>Deadhead</label><input type="number" style="width:60px" maxlength="4" name="DH_O"/><label>Miles  </label>
+    <label>Rate</label><input type="number" style="width:8ch" maxlength="6" name="rate"/>
+    <label>Weight</label><input type="number" style="width:80px" maxlength="6" name="weight"/><label>lbs</label>
+    <label>Length</label><input type="number" style="width:8ch" maxlength="2" name="length"/><label>ft</label><br>
+    <label>Contact Person</label><input type="text" style="width:80px" maxlength="44" name="contact_person"/>
+    <label>Tel Number</label><input type="tel" style="width:12ch" maxlength="12" name="contact_tel"/>
+    <label>Fax Number</label><input type="tel" style="width:12ch" maxlength="12" name="contact_fax"/>
+    <label>Email</label><input type="email" style="width:35ch" maxlength="35" name="contact_email"/><br>
+    <label>No.1 Stop</label><input type="text" style="width:100ch" maxlength="100" name="p1_address"/>
+    <br>
+    <label>No.2 Stop</label><input type="text" style="width:100ch" maxlength="100" name="p2_address"/>
+    <br>
+    <label>No.3 Stop</label><input type="text" style="width:100ch" maxlength="100" name="p3_address"/>
+    <br><label>Note:</label><textarea name="note" cols="40" rows="5"></textarea>
+    <br>
+    <input type="submit" name="submit" id="submit" style="margin-left:47%">
+    </form>
+    <!-- <h2>dispath Page</h2>
+    <p>Your account details are below:</p>
+    <table>
+        <tr>
+            <td>Username:</td>
+            <td>{{ account['username'] }}</td>
+        </tr>
+        <tr>
+            <td>Password:</td>
+            <td>{{ account['password'] }}</td>
+        </tr>
+        <tr>
+            <td>Email:</td>
+            <td>{{ account['email'] }}</td>
+        </tr>
+    </table> -->
+
+  </body>
+</html>
+

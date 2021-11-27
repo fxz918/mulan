@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+<style>
+.table_form {
+  margin: auto;
+  width: 90%;
+  border: 1px solid #73AD21;
+  padding: 10px;
+}
+</style>
+{% block content %}
+<form class="table_form" style="width: 97.5%;padding-left:2.5%" >
+
+<table>
+    <td style="text-align: center;width: 120px;background-color: green">Great</td>
+    <td style="text-align: center;width: 120px;background-color: blue">Common</td>
+    <td style="text-align: center;width: 120px;background-color: orange">Warning</td>
+    <td style="text-align: center;width: 120px;background-color: red">Unacceptable</td>
+</table>
+
+<table id="example" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th></th>
+                <th>ID#</th>
+                <th>Driver</th>
+                <th>Truck</th>
+                <th>Pickup</th>
+                <th>Delivery</th>
+                <th>Arrived</th>
+                <th>Trip</th>
+                <th>DH O</th>
+                <th>Rate</th>
+                <th>unit_price</th>
+                <th>Status</th>
+                <th>Origin Address</th>
+                <th>State</th>
+                <th>Destination Address</th>
+                <th>State</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th></th>
+                <th>ID#</th>
+                <th>Driver</th>
+                <th>Truck</th>
+                <th>Pickup</th>
+                <th>Delivery</th>
+                <th>Arrived</th>
+                <th>Trip</th>
+                <th>DH O</th>
+                <th>Rate</th>
+                <th>unit_price</th>
+                <th>Status</th>
+                <th>Origin Address</th>
+                <th>State</th>
+                <th>Destination Address</th>
+                <th>State</th>
+
+            </tr>
+        </tfoot>
+    </table>
+    <input type="button" value="按钮" onclick="callAllloads()" />
+    <a href="/loadslist" methods="post">fasong</a>
+    <script type="text/javascript" >
+        function callAllloads(){
+            window.location.assign("/loadslist")
+              {#const xhttp = new XMLHttpRequest();#}
+              {#xhttp.open("GET", "/loadslist");#}
+              {#xhttp.send();#}
+              return false
+        }
+
+    </script>
+<!--<button id="button">Update a load</button> -->
+</form>
+
+    <!--finishe block content -->
+{% endblock %}
+
+{% block scripts %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+
+<style type="text/css">
+    td.details-control {
+    background: url('../static/details_open.png') no-repeat center center;
+    cursor: pointer;
+}
+tr.shown td.details-control {
+    background: url('../static/details_close.png') no-repeat center center;
+}
+</style>
+
+<!--<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script> -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript">
+    /* Formatting function for row details - modify as you need */
+function format ( d ) {
+    // `d` is the original data object for the row
+    return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
+        '<tr>'+
+            '<td>Load#:</td>'+ '<td>'+d.load_num +'</td>'+'<td>PO#:</td>'+ '<td>'+d.po_num+'</td>'+
+        '</tr>'+
+        '<tr>' + '<td>Customer:</td>'+'<td>'+d.customer+'</td>'+ '<td>Contact:</td>'+'<td>'+d.contact_person+'</td>'+ '<td>Tel:</td>'+'<td>'+d.contact_tel+'</td>' + '<td>Email:</td>'+'<td>'+d.contact_email+'</td>' + '<td>Fax:</td>'+'<td>'+d.contact_fax+'</td>' +  '<td>Weight:</td>'+'<td>'+d.weight+'</td>' +  '<td>Length:</td>'+'<td>'+d.length+'</td>' +'</tr>' +
+        '<tr>'+
+            '<td>Stop 1:</td>'+'<td>'+d.p1_address+'</td>'+
+        '</tr>'+
+        '<tr>'+
+            '<td>Stop 2:</td>'+'<td>'+d.p2_address+'</td>'+
+        '</tr>'+
+        '<tr>'+
+            '<td>Stop 3:</td>'+'<td>'+d.p3_address+'</td>'+
+        '</tr>'+
+        '<tr>'+
+            '<td>Note:</td>'+'<td>'+d.note+'</td>'+
+        '</tr>'+
+    '</table>';
+}
+
+$(document).ready(function() {
+    var table = $('#example').DataTable( {
+        //"ajax": "../static/objects.txt",
+        'processing': true,
+        'serverSide': true,
+        'serverMethod': 'post',
+        "ajax":{"url":"/ajaxfile"},
+        "columns": [
+            {
+                "className":      'details-control',
+                "orderable":      false,
+                "data":           null,
+                "defaultContent": ''
+            },
+            {"data":"idloads"},
+            { "data": "driver_name" },
+            { "data": "truck_name" },
+            {"data":"pickup"},
+            {"data":"delivery"},
+            {"data":"avail"},
+            {"data":"trip"},
+            {#{"data":"DH_O"},#}
+            {
+                data: "DH_O",
+                render: function(data, type) {
+                    var number = $.fn.dataTable.render.number( ',','.',2,'','Mi'). display(data);
+
+                    if (type === 'display')
+                    {
+                        let color = 'blue';
+                        if (data >100) {color = 'red';}
+                        else if (data <100 && data>30) {color = 'orange';}
+                        else if (data <30) {color = 'green';}
+
+                        return '<span style="color:' + color + '">' + number + '</span>';
+                    }
+                    return number;
+                }
+            },
+            {"data":"rate"},
+            {
+                data: "unit_price",
+                render: function(data, type) {
+                    var number = $.fn.dataTable.render.number( ',', '.', 2, '$'). display(data);
+
+                    if (type === 'display')
+                    {
+                        let color = 'blue';
+                        if (data < 1.6) {color = 'red';}
+                        else if (data <2 && data >=1.6) {color = 'orange';}
+                        else if (data >3) {color = 'green';}
+
+                        return '<span style="color:' + color + '">' + number + '</span>';
+                    }
+                    return number;
+                }
+            },
+            {"data": "load_status" },
+            {"data": "origin_address" },
+            {"data": "origin_state" },
+            {"data":"destination_address"},
+            {"data":"destination_state"},
+
+
+        ],
+
+    } );
+
+    // Add event listener for opening and closing details
+    $('#example tbody').on('click', 'td.details-control', function () {
+        var tr = $(this).closest('tr');
+        var row = table.row( tr );
+
+        if ( row.child.isShown() ) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+        }
+        else {
+            // Open this row
+            row.child( format(row.data()) ).show();
+            tr.addClass('shown');
+        }
+        //var td=tr.closest('td')
+       // alert(row.data().driver_name)
+    } );
+
+    //以下代码是为判断选择的哪一行
+        $('#example tbody').on( 'click', 'tr', function () {
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    } );
+
+    $('#button').click( function () {
+       //终于搞定了，找到了当前选择行的数据内容
+      //  alert(table.row('.selected').data().driver_name);//*****重点！！！！！
+        //发送post request到后台
+
+
+
+    } );
+} );
+</script>
+    <!-- end of script block -->
+{% endblock %}
